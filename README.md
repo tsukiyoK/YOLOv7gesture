@@ -1,13 +1,3 @@
-# pytorch-yolov7
-使用yolov7训练自己的数据集
-
-
-
-
-
-
-
-
-
+使用YOLOv7訓練手勢辨識，操作電腦
 
 参考：https://github.com/WongKinYiu/yolov7
