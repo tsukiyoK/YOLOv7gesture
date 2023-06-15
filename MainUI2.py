@@ -10,120 +10,32 @@ import torch.backends.cudnn as cudnn
 import win32api
 import win32con
 import time
+import action
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog
 
-from action import *
 from models.experimental import attempt_load
 from utils.datasets import letterbox
-from utils.general import check_img_size, non_max_suppression, scale_coords, xyxy2xywh, checkWay, checkCD
+from utils.general import check_img_size, non_max_suppression, scale_coords, xyxy2xywh, checkWay, checkCD, check2Hold, set2Hold
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device
-
+from action import *
 from ui_setting import Ui_Setting
-
-'''class Movement:
-    def __init__(self, play_cd=2.5):
-        self.mouse_locate = []
-        self.mouse_history = []
-        self.gesture_locate = []
-        self.history_pop = [(310, 155)]
-        self.mouse_point = (0, 0)
-        self.play_cd = play_cd
-        self.qImg = None
-
-        
-    def action(self, label, det):
-        # self.label = label
-        if label == '1':
-            self.mouseMovement(det)
-        elif label == 'OK':
-            if checkCD(time.time(), self.play_cd):
-                self.gestureAction()
-        elif label == 'OK':
-            if checkCD(time.time(), 0.2):
-                self.fourWayAction(det)
-        
-
-    def mouseMovement(self, det):
-        if len(self.mouse_locate) == 0 and det.shape[0] != 0:
-            mask = (det[:, -1] == 0)
-            if mask.any():
-                self.mouse_locate.append(
-                    xyxy2xywh(det[mask][-1, :4].view(1, 4)).cpu().numpy().astype(int)[0])
-                self.mouse_locate.append(
-                    xyxy2xywh(det[mask][-1, :4].view(1, 4)).cpu().numpy().astype(int)[0])
-        elif len(self.mouse_locate) == 2:
-            if det.shape[0] != 0:
-                mask = (det[:, -1] == 0)
-                if mask.any():
-                    self.mouse_locate.append(
-                        xyxy2xywh(det[mask][-1, :4].view(1, 4)).cpu().numpy().astype(int)[0])
-                self.mouse_locate.pop(0)
-        elif det.shape[0] != 0:
-            mask = (det[:, -1] == 0)
-            if mask.any():
-                self.mouse_locate.append(
-                    xyxy2xywh(det[mask][-1, :4].view(1, 4)).cpu().numpy().astype(int)[0])
-
-        if len(self.mouse_locate) == 2:
-            x1, y1, w1, h1 = self.mouse_locate[0]
-            x2, y2, w2, h2 = self.mouse_locate[1]
-            mouse_shift = [x2 - x1, y2 - y1]
-            self.mouse_point = (x2, int(y2 - h2 // 2))
-
-            if len(self.mouse_history) == 0:
-                self.mouse_history.append((x1, int(y1 - h1 // 2)))
-                self.mouse_history.append((x2, int(y2 - h2 // 2)))
-            elif len(self.mouse_history) > 10:
-                self.history_pop.append(self.mouse_history[0])
-                setCursor = self.mouse_history[8]
-                x, y = setCursor
-                win32api.SetCursorPos((4 * (640 - x), 4 * y))  # 設置滑鼠座標
-                self.mouse_history.pop(0)
-            else:
-                self.mouse_history.append((x2, int(y2 - h2 // 2)))
-
-
-    def gestureAction(self):
-        win32api.keybd_event(179, 0)
-        win32api.keybd_event(179, 0, win32con.KEYEVENTF_KEYUP)
-
-    def fourWayAction(self, det):
-        if det.shape[0] != 0:
-            mask = (det[:, -1] == 1)
-            if mask.any():
-                self.gesture_locate.append(
-                    xyxy2xywh(det[mask][-1, :4].view(1, 4)).cpu().numpy().astype(int)[0])
-        if len(self.gesture_locate) == 2:
-            x1, y1, w1, h1 = self.gesture_locate[0]
-            x2, y2, w2, h2 = self.gesture_locate[1]
-            self.gesture_locate.pop()
-            self.gesture_locate.pop()
-            way = checkWay(x1, x2, y1, y2)
-            if way == 1:
-                n = 5
-                while n:
-                    win32api.keybd_event(win32con.VK_VOLUME_UP, 0)
-                    win32api.keybd_event(win32con.VK_VOLUME_UP, 0, win32con.KEYEVENTF_KEYUP)
-                    n = n - 1
-            elif way == 2:
-                n = 5
-                while n:
-                    win32api.keybd_event(win32con.VK_VOLUME_DOWN, 0)
-                    win32api.keybd_event(win32con.VK_VOLUME_DOWN, 0, win32con.KEYEVENTF_KEYUP)
-                    n = n - 1
-'''
+from ui_2 import Ui_MainWindow
 
 
 class Main(QtWidgets.QMainWindow):
     def __init__(self, parent=None, play_cd=2.5):
         super(Main, self).__init__(parent)
+        self.gestureActions = None
+        self.config = configparser.ConfigParser()
+        self.travelDefault = 0
+        self.holdDefault = 0
         self.setting = Setting()
-
-        self.setWindowIcon(QIcon("images/UI/kk.jpg"))
-        self.setupUi(self)
+        self.uiMain = Ui_MainWindow()
+        self.uiMain.setupUi(self)
+        self.setWindowIcon(QIcon("images/UI/kk.png"))
         self.timer_video = QtCore.QTimer()
         self.init_slots()
         self.cap = cv2.VideoCapture()
@@ -135,23 +47,36 @@ class Main(QtWidgets.QMainWindow):
         self.history_pop = [(310, 155)]
         self.mouse_point = (0, 0)
         self.play_cd = play_cd
-
+        self.is2hold = False
         # 权重初始文件名
         self.openfile_name_model = None
+        self.getDefault()
 
     def action(self, label, det):
         # '1', '2', '5', '0', 'OK', 'Good' .fourWayAction "mask"
         if label == '1':
             self.mouseMovement(det)
         elif label == '2':
-            if checkCD(time.time(), 1.5):
-                mouseRightClk()
+            if not self.is2hold:
+                mouseLeftHold()
+                self.is2hold = True
+
         elif label == '0':
             if checkCD(time.time(), self.play_cd):
                 self.resetAllGes()
+                mouseReset()
+                self.is2hold = False
+
         elif label == '5':
-            if checkCD(time.time(), 0.2):
-                self.fourWayAction(det)
+            if checkCD(time.time(), 0.1):
+                self.fourWayAction(det, self.travelSens)
+
+        elif label == 'Good':
+            if checkCD(time.time(), self.holdSens):
+                mouseRightClk()
+
+        elif label == 'OK':
+            mouseLeftClk()
 
     def resetAllGes(self):
         self.mouse_locate = []
@@ -190,14 +115,16 @@ class Main(QtWidgets.QMainWindow):
                 self.mouse_history.append((x2, int(y2 - h2 // 2)))
             elif len(self.mouse_history) > 10:
                 self.history_pop.append(self.mouse_history[0])
-                setCursor = self.mouse_history[8]
-                x, y = setCursor
-                win32api.SetCursorPos((4 * (640 - x), 4 * y))  # 設置滑鼠座標
+                x, y = self.mouse_history[7]
+                new_x, new_y = self.mouse_history[9]
+                val_x, val_y = new_x-x, new_y-y
+                current_x, current_y = win32api.GetCursorPos()
+                win32api.SetCursorPos((current_x-(int(self.cursorSens)*val_x), current_y+(int(self.cursorSens)*val_y)))  # 設置滑鼠座標
                 self.mouse_history.pop(0)
             else:
                 self.mouse_history.append((x2, int(y2 - h2 // 2)))
 
-    def fourWayAction(self, det):
+    def fourWayAction(self, det, sens):
         # '1', '2', '5', '0', 'OK', 'Good' .fourWayAction "mask"
         if det.shape[0] != 0:
             mask = (det[:, -1] == 2)
@@ -209,21 +136,43 @@ class Main(QtWidgets.QMainWindow):
             x2, y2, w2, h2 = self.gesture_locate[1]
             self.gesture_locate.pop()
             self.gesture_locate.pop()
-            way = checkWay(x1, x2, y1, y2)
+            way = checkWay(x1, x2, y1, y2, sens)
             if way == 1:
-                volumeUp()
+                self.gestureFunction5U()
             elif way == 2:
-                volumeDown()
+                self.gestureFunction5D()
+            elif way == 3:
+                self.gestureFunction5L()
+            elif way == 4:
+                self.gestureFunction5R()
+
+
+    def getDefault(self):
+        self.config.read('config.ini', encoding="utf-8")
+        gestureAction5U = self.config.get('gestureAction', '5u')
+        gestureAction5D = self.config.get('gestureAction', '5d')
+        gestureAction5L = self.config.get('gestureAction', '5l')
+        gestureAction5R = self.config.get('gestureAction', '5r')
+        self.gestureFunction5U = getattr(action, gestureAction5U)
+        self.gestureFunction5D = getattr(action, gestureAction5D)
+        self.gestureFunction5L = getattr(action, gestureAction5L)
+        self.gestureFunction5R = getattr(action, gestureAction5R)
+        self.travelDefault = self.config['slider']['travel']
+        self.holdDefault = self.config['slider']['commonHoldtime']
+        self.cursorsensDefault = self.config['slider']['cursorsens']
+        self.travelSens = 120+(5-int(self.travelDefault))*10
+        self.holdSens = 1.5+((int(self.holdDefault)-5)*0.2)
+        self.cursorSens = 4+((int(self.cursorsensDefault)-5)*0.2)
 
     # 打开权重文件
     def open_model(self):
-        self.openfile_name_model, _ = QFileDialog.getOpenFileName(self.pushButton_pt, 'Select weights',
+        self.openfile_name_model, _ = QFileDialog.getOpenFileName(self.uiMain.pushButton_pt, 'Select weights',
                                                                   'pt/', "*.pt;")
         if not self.openfile_name_model:
             QtWidgets.QMessageBox.warning(self, u"Warning", u"Failed to open weights", buttons=QtWidgets.QMessageBox.Ok,
                                           defaultButton=QtWidgets.QMessageBox.Ok)
         else:
-            self.label_2.setText('Weights path：' + str(self.openfile_name_model))
+            self.uiMain.label_2.setText('Weights path：' + str(self.openfile_name_model))
 
     # 模型初始化
     def model_init(self):
@@ -234,7 +183,7 @@ class Main(QtWidgets.QMainWindow):
         parser.add_argument('--data', type=str, default='data/coco128.yaml', help='(optional) dataset.yaml path')
         parser.add_argument('--img-size', nargs='+', type=int, default=640,
                             help='inference size h,w')
-        parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
+        parser.add_argument('--conf-thres', type=float, default=0.6, help='confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
         parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -282,94 +231,25 @@ class Main(QtWidgets.QMainWindow):
         self.colors = [[random.randint(0, 255)
                         for _ in range(3)] for _ in self.names]
         print("model initial done")
-        QtWidgets.QMessageBox.information(self, u"ok", u"Model initialize success")
+        QtWidgets.QMessageBox.information(self, u"ok", u"Model initialize done")
 
     # ui.py文件的函数
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1092, 697)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(60, 190, 640, 360))
-        self.label.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.label.setObjectName("label")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(770, 180, 171, 381))
-        self.label_2.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.label_2.setObjectName("label_2")
-        self.layoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.layoutWidget.setGeometry(QtCore.QRect(30, 30, 671, 151))
-        self.layoutWidget.setMinimumSize(QtCore.QSize(40, 60))
-        self.layoutWidget.setObjectName("layoutWidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.layoutWidget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_pt = QtWidgets.QPushButton(self.layoutWidget)
-        self.pushButton_pt.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_pt.setObjectName("pushButton_pt")
-        self.horizontalLayout.addWidget(self.pushButton_pt)
-        self.pushButton_init = QtWidgets.QPushButton(self.layoutWidget)
-        self.pushButton_init.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_init.setObjectName("pushButton_init")
-        self.horizontalLayout.addWidget(self.pushButton_init)
-        self.pushButton_sht = QtWidgets.QPushButton(self.layoutWidget)
-        self.pushButton_sht.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_sht.setObjectName("pushButton_sht")
-        self.horizontalLayout.addWidget(self.pushButton_sht)
-        self.pushButton_exit = QtWidgets.QPushButton(self.layoutWidget)
-        self.pushButton_exit.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_exit.setObjectName("pushButton_exit")
-        self.horizontalLayout.addWidget(self.pushButton_exit)
-        self.pushButton_setting = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_setting.setGeometry(QtCore.QRect(770, 70, 162, 60))
-        self.pushButton_setting.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_setting.setObjectName("pushButton_setting")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1092, 25))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.pushButton_setting.clicked.connect(self.setting.show)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "yolov7手勢操作電腦系統"))
-        self.pushButton_pt.setText(_translate("MainWindow", "Select weights"))
-        self.pushButton_init.setText(_translate("MainWindow", "Model initialize"))
-        # self.pushButton_openimg.setText(_translate("MainWindow", "Open picture"))
-        # self.pushButton_video.setText(_translate("MainWindow", "Open video"))
-        self.pushButton_sht.setText(_translate("MainWindow", "Open Camera"))
-        # self.pushButton_stop.setText(_translate("MainWindow", "Pause(video)"))
-        self.pushButton_exit.setText(_translate("MainWindow", "Stop(video)"))
-        self.label.setText(_translate("MainWindow", ""))
-        self.label_2.setText(_translate("MainWindow", ""))
-        self.pushButton_setting.setText(_translate("MainWindow", "Setting"))
 
     # 绑定信号与槽
     def init_slots(self):
-        #        self.pushButton_openimg.clicked.connect(self.button_image_open)
-        #       self.pushButton_video.clicked.connect(self.button_video_open)
-        self.pushButton_sht.clicked.connect(self.button_camera_open)
+        self.uiMain.pushButton_sht.clicked.connect(self.button_camera_open)
         self.timer_video.timeout.connect(self.show_video_frame)
-        self.pushButton_pt.clicked.connect(self.open_model)
-        self.pushButton_init.clicked.connect(self.model_init)
-
-    #        self.pushButton_stop.clicked.connect(self.button_video_stop)
+        self.uiMain.pushButton_pt.clicked.connect(self.open_model)
+        self.uiMain.pushButton_init.clicked.connect(self.model_init)
+        self.uiMain.pushButton_setting.clicked.connect(self.setting.show)
 
     # 打开图片
     def button_image_open(self):
-        self.label_2.setText('图片打开成功')
+        self.uiMain.label_2.setText('图片打开成功')
         name_list = []
         img_name, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "打开图片", "", "*.jpg;;*.png;;All Files(*)")
-        self.label_2.setText("图片路径：" + img_name)
+        self.uiMain.label_2.setText("图片路径：" + img_name)
         if not img_name:
             QtWidgets.QMessageBox.warning(self, u"Warning", u"Failed to open picture", buttons=QtWidgets.QMessageBox.Ok,
                                           defaultButton=QtWidgets.QMessageBox.Ok)
@@ -414,14 +294,14 @@ class Main(QtWidgets.QMainWindow):
             self.result, (640, 480), interpolation=cv2.INTER_AREA)
         self.QtImg = QtGui.QImage(
             self.result.data, self.result.shape[1], self.result.shape[0], QtGui.QImage.Format_RGB32)
-        self.label.setPixmap(QtGui.QPixmap.fromImage(self.QtImg))
-        self.label.setScaledContents(True)  # 自适应界面大小
+        self.uiMain.label.setPixmap(QtGui.QPixmap.fromImage(self.QtImg))
+        self.uiMain.label.setScaledContents(True)  # 自适应界面大小
 
     # 打开视频
     def button_video_open(self):
         video_name, _ = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open video", "", "*.mp4;;*.avi;;All Files(*)")
-        self.label_2.setText("Video path：" + video_name)
+        self.uiMain.label_2.setText("Video path：" + video_name)
         flag = self.cap.open(video_name)
         if flag == False:
             QtWidgets.QMessageBox.warning(
@@ -437,7 +317,7 @@ class Main(QtWidgets.QMainWindow):
             self.pushButton_sht.setDisabled(True)
             self.pushButton_init.setDisabled(True)
             self.pushButton_pt.setDisabled(True)
-            self.label.setScaledContents(True)  # 自适应界面大小
+            self.uiMain.label.setScaledContents(True)  # 自适应界面大小
 
     # 显示视频帧
     def show_video_frame(self):
@@ -474,7 +354,7 @@ class Main(QtWidgets.QMainWindow):
                             L = self.names[int(cls)]
                             label = '%s %.2f' % (self.names[int(cls)], conf)
                             name_list.append(self.names[int(cls)])
-                            self.label_2.setText(label)  # PyQT页面打印类别和置信度
+                            self.uiMain.label_2.setText(label)  # PyQT页面打印类别和置信度
                             plot_one_box(
                                 xyxy, showimg, label=label, color=self.colors[int(cls)], line_thickness=2)
                             self.action(L, det)
@@ -489,13 +369,13 @@ class Main(QtWidgets.QMainWindow):
             self.result = cv2.cvtColor(show, cv2.COLOR_BGR2RGB)
             showImage = QtGui.QImage(self.result.data, self.result.shape[1], self.result.shape[0],
                                      QtGui.QImage.Format_RGB888)
-            self.label.setPixmap(QtGui.QPixmap.fromImage(showImage))
+            self.uiMain.label.setPixmap(QtGui.QPixmap.fromImage(showImage))
 
         else:
             self.timer_video.stop()
             self.cap.release()
             self.out.release()
-            self.label.clear()
+            self.uiMain.label.clear()
 
             # 视频帧显示期间，禁用其他检测按键功能
             #      self.pushButton_video.setDisabled(False)
@@ -519,23 +399,23 @@ class Main(QtWidgets.QMainWindow):
                 self.timer_video.start(30)
                 #                self.pushButton_video.setDisabled(True)
                 #                self.pushButton_openimg.setDisabled(True)
-                self.pushButton_init.setDisabled(True)
-                self.pushButton_pt.setDisabled(True)
+                self.uiMain.pushButton_init.setDisabled(True)
+                self.uiMain.pushButton_pt.setDisabled(True)
                 #                self.pushButton_stop.setDisabled(True)
-                self.pushButton_exit.setDisabled(True)
-                self.pushButton_sht.setText(u"Turn off camera")
+                self.uiMain.pushButton_exit.setDisabled(True)
+                self.uiMain.pushButton_sht.setText(u"Turn off camera")
         else:
             self.timer_video.stop()
             self.cap.release()
             self.out.release()
-            self.label.clear()
+            self.uiMain.label.clear()
             #            self.pushButton_video.setDisabled(False)
             #            self.pushButton_openimg.setDisabled(False)
-            self.pushButton_init.setDisabled(False)
-            self.pushButton_pt.setDisabled(False)
+            self.uiMain.pushButton_init.setDisabled(False)
+            self.uiMain.pushButton_pt.setDisabled(False)
             #           self.pushButton_stop.setDisabled(False)
-            self.pushButton_exit.setDisabled(False)
-            self.pushButton_sht.setText(u"Detect by Camera")
+            self.uiMain.pushButton_exit.setDisabled(False)
+            self.uiMain.pushButton_sht.setText(u"Detect by Camera")
 
     # 暂停/继续 视频
     def button_video_stop(self):
@@ -555,7 +435,7 @@ class Main(QtWidgets.QMainWindow):
     def finish_detect(self):
         self.cap.release()  # 释放video_capture资源
         self.out.release()  # 释放video_writer资源
-        self.label.clear()  # 清空label画布
+        self.uiMain.label.clear()  # 清空label画布
         # 启动其他检测按键功能
         #       self.pushButton_video.setDisabled(False)
         #       self.pushButton_openimg.setDisabled(False)
@@ -578,217 +458,61 @@ class Setting(QtWidgets.QMainWindow):
         self.optionsDefault = ['volumeUp', 'volumeDown', 'mediaPause', 'volumeMute', 'mediaPrevTrack',
                                'mediaNextTrack', 'windowMinimize', 'windowMaximize', 'windowBackToscreen']
         self.config = configparser.ConfigParser()
+        self.setWindowIcon(QIcon("images/UI/kk.png"))
         self.options = None
         self.gestureActionsgestureActions = None
         self.ui = Ui_Setting()
         self.ui.setupUi(self)
 
-
-        #self.setupSetting(self, Setting)
         self.options = []
+        self.travelDefault = 0
+        self.holdDefault = 0
         self.getDefault()
         self.setDefault()
-
-    '''def setupSetting(self, Setting):
-        Setting.setObjectName("Setting")
-        Setting.resize(1005, 1004)
-        Setting.setBaseSize(QtCore.QSize(0, 2))
-        self.centralwidget = QtWidgets.QWidget(Setting)
-        self.centralwidget.setObjectName("centralwidget")
-        self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox.setGeometry(QtCore.QRect(50, 250, 451, 261))
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        font.setPointSize(12)
-        self.groupBox.setFont(font)
-        self.groupBox.setObjectName("groupBox")
-        self.formLayoutWidget = QtWidgets.QWidget(self.groupBox)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(20, 40, 411, 211))
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.formLayoutWidget.setFont(font)
-        self.formLayoutWidget.setObjectName("formLayoutWidget")
-        self.formLayout = QtWidgets.QFormLayout(self.formLayoutWidget)
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.formLayout.setObjectName("formLayout")
-        self.label = QtWidgets.QLabel(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label.setFont(font)
-        self.label.setObjectName("label")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
-        self.label_2 = QtWidgets.QLabel(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_2.setFont(font)
-        self.label_2.setObjectName("label_2")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.label_3 = QtWidgets.QLabel(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_3.setFont(font)
-        self.label_3.setObjectName("label_3")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
-        self.label_4 = QtWidgets.QLabel(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_4.setFont(font)
-        self.label_4.setObjectName("label_4")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_4)
-        self.comboBox = QtWidgets.QComboBox(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.comboBox.setFont(font)
-        self.comboBox.setObjectName("comboBox")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox)
-        self.comboBox_2 = QtWidgets.QComboBox(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.comboBox_2.setFont(font)
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.comboBox_2)
-        self.comboBox_4 = QtWidgets.QComboBox(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.comboBox_4.setFont(font)
-        self.comboBox_4.setObjectName("comboBox_4")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.comboBox_4)
-        self.comboBox_5 = QtWidgets.QComboBox(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.comboBox_5.setFont(font)
-        self.comboBox_5.setObjectName("comboBox_5")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.comboBox_5)
-        self.label_5 = QtWidgets.QLabel(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_5.setFont(font)
-        self.label_5.setObjectName("label_5")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_5)
-        self.comboBox_3 = QtWidgets.QComboBox(self.formLayoutWidget)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.comboBox_3.setFont(font)
-        self.comboBox_3.setObjectName("comboBox_3")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.comboBox_3)
-        self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
-        self.groupBox_2.setGeometry(QtCore.QRect(60, 20, 431, 221))
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        font.setPointSize(12)
-        self.groupBox_2.setFont(font)
-        self.groupBox_2.setObjectName("groupBox_2")
-        self.formLayoutWidget_2 = QtWidgets.QWidget(self.groupBox_2)
-        self.formLayoutWidget_2.setGeometry(QtCore.QRect(20, 40, 391, 151))
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.formLayoutWidget_2.setFont(font)
-        self.formLayoutWidget_2.setObjectName("formLayoutWidget_2")
-        self.formLayout_2 = QtWidgets.QFormLayout(self.formLayoutWidget_2)
-        self.formLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_2.setObjectName("formLayout_2")
-        self.label_6 = QtWidgets.QLabel(self.formLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_6.setFont(font)
-        self.label_6.setObjectName("label_6")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_6)
-        self.horizontalSlider = QtWidgets.QSlider(self.formLayoutWidget_2)
-        self.horizontalSlider.setMinimum(0)
-        self.horizontalSlider.setMaximum(10)
-        self.horizontalSlider.setProperty("value", 5)
-        self.horizontalSlider.setSliderPosition(5)
-        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.horizontalSlider.setObjectName("horizontalSlider")
-        self.formLayout_2.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.horizontalSlider)
-        self.label_8 = QtWidgets.QLabel(self.formLayoutWidget_2)
-        self.label_8.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_8.setObjectName("label_8")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.label_8)
-        self.label_7 = QtWidgets.QLabel(self.formLayoutWidget_2)
-        font = QtGui.QFont()
-        font.setFamily("微軟正黑體")
-        self.label_7.setFont(font)
-        self.label_7.setObjectName("label_7")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_7)
-        self.horizontalSlider_2 = QtWidgets.QSlider(self.formLayoutWidget_2)
-        self.horizontalSlider_2.setMinimum(0)
-        self.horizontalSlider_2.setMaximum(10)
-        self.horizontalSlider_2.setProperty("value", 5)
-        self.horizontalSlider_2.setSliderPosition(5)
-        self.horizontalSlider_2.setOrientation(QtCore.Qt.Horizontal)
-        self.horizontalSlider_2.setObjectName("horizontalSlider_2")
-        self.formLayout_2.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.horizontalSlider_2)
-        self.label_9 = QtWidgets.QLabel(self.formLayoutWidget_2)
-        self.label_9.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_9.setObjectName("label_9")
-        self.formLayout_2.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.label_9)
-        Setting.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(Setting)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1005, 25))
-        self.menubar.setObjectName("menubar")
-        Setting.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(Setting)
-        self.statusbar.setObjectName("statusbar")
-        Setting.setStatusBar(self.statusbar)
-
-        # set combobox
-        self.comboList = [self.comboBox, self.comboBox_2, self.comboBox_3, self.comboBox_4, self.comboBox_5]
-        for combobox in self.comboList:
-            combobox.addItems(self.optionsDefault)
-
-        self.retranslateUi(Setting)
-        QtCore.QMetaObject.connectSlotsByName(Setting)
-        
-        '''
-
-
-    def retranslateUi(self, Setting):
-        _translate = QtCore.QCoreApplication.translate
-        Setting.setWindowTitle(_translate("Setting", "Setting"))
-        self.groupBox.setTitle(_translate("Setting", " 5 "))
-        self.groupBox_2.setTitle(_translate("Setting", "Common"))
-
-        self.label.setText(_translate("Setting", "上"))
-        self.label_2.setText(_translate("Setting", "下"))
-        self.label_3.setText(_translate("Setting", "左"))
-        self.label_4.setText(_translate("Setting", "右"))
-        self.label_5.setText(_translate("Setting", "Hold"))
-        self.label_6.setText(_translate("Setting", "Hold Time"))
-        self.label_7.setText(_translate("Setting", "Travel"))
-        self.label_commonHoldtime.setText(_translate("Setting", "0"))
-        self.label_travel.setText(_translate("Setting", "0"))
-
-        self.comboList = [self.comboBox, self.comboBox_2, self.comboBox_3, self.comboBox_4, self.comboBox_5]
-        for combobox in self.comboList:
-            combobox.addItems(self.optionsDefault)
+        self.setSliderDefault()
 
     def getDefault(self):
         self.config.read('config.ini', encoding="utf-8")
         self.gestureActions = self.config.items('gestureAction')
         for key, value in self.gestureActions:
             self.options.append(key)
+        self.travelDefault = self.config['slider']['travel']
+        self.holdDefault = self.config['slider']['commonHoldtime']
 
     def setDefault(self):
         self.comboList = [self.ui.comboBox, self.ui.comboBox_2, self.ui.comboBox_3, self.ui.comboBox_4, self.ui.comboBox_5]
         for combobox in self.comboList:
             combobox.addItems(self.optionsDefault)
-        _i = 1
+        _i = 0
         for combobox in self.comboList:
             current_selection = self.config.get('gestureAction', self.options[_i])
             combobox.setCurrentIndex(self.optionsDefault.index(current_selection))
             combobox.currentIndexChanged.connect(self.saveChange)
             _i += 1
 
+        self.ui.horizontalSlider_travel.valueChanged.connect(lambda: self.setSliderValue(self.ui.horizontalSlider_travel
+                                                                                         , self.ui.label_travel))
+        self.ui.horizontalSlider_commonHoldtime.valueChanged.connect(lambda:
+                                                                     self.setSliderValue(self.ui.horizontalSlider_commonHoldtime, self.ui.label_commonHoldtime))
+        self.ui.comboBox_11.addItem("Drag")
+        self.ui.comboBox_12.addItem("Enter")
+        self.ui.comboBox_13.addItem("RightClick")
+    def setSliderDefault(self):
+        self.ui.horizontalSlider_travel.setValue(int(self.travelDefault))
+        self.ui.horizontalSlider_commonHoldtime.setValue(int(self.holdDefault))
+        self.ui.label_travel.setText(f"{int(self.travelDefault)}")
+        self.ui.label_commonHoldtime.setText(f"{int(self.holdDefault)}")
+
+    def setSliderValue(self, slider, label):
+        label.setText(f"{slider.value()}")
+
     def saveChange(self):
-        _i = 1
+        _i = 0
         for combobox in self.comboList:
             self.config.set('gestureAction', self.options[_i], combobox.currentText())
             with open('config.ini', 'w', encoding="utf-8") as configfile:
                 self.config.write(configfile)
             _i += 1
-
-
 
 
 if __name__ == '__main__':

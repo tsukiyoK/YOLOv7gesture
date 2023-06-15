@@ -1,0 +1,27 @@
+## train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
+train: /root/autodl-nas/data/images/train  # 118287 images
+val: /root/autodl-nas/data/images/val   # 5000 images
+## number of classes
+#nc: 2
+#
+## class names
+#names: ['dog','cat']
+## COCO 2017 dataset http://cocodataset.org
+
+# download command/URL (optional)
+#download: bash ./scripts/get_coco.sh
+
+# train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
+#train: ./roboflow/images/train_fruit  # 118287 images
+#val: ./roboflow/images/val_fruit  # 5000 images
+##test: ./coco/test-dev2017.txt  # 20288 of 40670 images, submit to https://competitions.codalab.org/competitions/20794
+#
+## number of classes
+#nc: 1
+#
+## class names
+#names: [ 'stitch' ]
+
+#Classes
+nc: 4  # number of classes
+names: ['trafficlight', 'speedlimit', 'crosswalk', 'stop']  # class names
