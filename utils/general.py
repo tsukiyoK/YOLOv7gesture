@@ -29,6 +29,7 @@ pd.options.display.max_columns = 10
 cv2.setNumThreads(0)  # prevent OpenCV from multithreading (incompatible with PyTorch DataLoader)
 os.environ['NUMEXPR_MAX_THREADS'] = str(min(os.cpu_count(), 8))  # NumExpr max threads
 last_time = None
+authSign = None
 isHold = False
 def set_logging(rank=-1):
     logging.basicConfig(
@@ -59,19 +60,24 @@ def emojis(str=''):
     return str.encode().decode('ascii', 'ignore') if platform.system() == 'Windows' else str
 
 
-def checkCD(current_time, trigger_time):
+def checkCD(current_time, trigger_time, auth):
     global last_time  # 使用 global 關鍵字來取得與修改全域變數
+    global authSign
 
-    if last_time is None:
+    if last_time is None or authSign != auth:
         last_time = current_time
+        authSign = auth
         return 0
 
     time_diff = current_time - last_time  # 計算時間差
-    if 4 >= time_diff >= trigger_time:
+
+    if 3 >= time_diff >= trigger_time:
         last_time = None
+        authSign = None
         return 1
-    if time_diff > 4:
+    if time_diff > 3:
         last_time = current_time
+        authSign = auth
         return 0
 
 

@@ -26,7 +26,7 @@ from ui_2 import Ui_MainWindow
 
 
 class Main(QtWidgets.QMainWindow):
-    def __init__(self, parent=None, play_cd=2.5):
+    def __init__(self, parent=None, play_cd=1):
         super(Main, self).__init__(parent)
         self.gestureActions = None
         self.config = configparser.ConfigParser()
@@ -62,26 +62,31 @@ class Main(QtWidgets.QMainWindow):
                 self.is2hold = True
 
         elif label == '0':
-            if checkCD(time.time(), self.play_cd):
+            if checkCD(time.time(), self.play_cd, 0):
                 self.resetAllGes()
-                mouseReset()
                 self.is2hold = False
 
         elif label == '5':
-            if checkCD(time.time(), 0.1):
+            if checkCD(time.time(), 0.1, 5):
                 self.fourWayAction(det, self.travelSens)
 
+
         elif label == 'Good':
-            if checkCD(time.time(), self.holdSens):
+            if checkCD(time.time(), self.holdSens, 6):
                 mouseRightClk()
 
+
         elif label == 'OK':
-            mouseLeftClk()
+            if checkCD(time.time(), self.holdSens, 7):
+                mouseLeftClk()
+
+
 
     def resetAllGes(self):
         self.mouse_locate = []
         self.mouse_history = []
         self.gesture_locate = []
+        mouseReset()
 
     def mouseMovement(self, det):
         if len(self.mouse_locate) == 0 and det.shape[0] != 0:
@@ -160,7 +165,7 @@ class Main(QtWidgets.QMainWindow):
         self.travelDefault = self.config['slider']['travel']
         self.holdDefault = self.config['slider']['commonHoldtime']
         self.cursorsensDefault = self.config['slider']['cursorsens']
-        self.travelSens = 120+(5-int(self.travelDefault))*10
+        self.travelSens = 80+(5-int(self.travelDefault))*10
         self.holdSens = 1.5+((int(self.holdDefault)-5)*0.2)
         self.cursorSens = 4+((int(self.cursorsensDefault)-5)*0.2)
 
@@ -183,7 +188,7 @@ class Main(QtWidgets.QMainWindow):
         parser.add_argument('--data', type=str, default='data/coco128.yaml', help='(optional) dataset.yaml path')
         parser.add_argument('--img-size', nargs='+', type=int, default=640,
                             help='inference size h,w')
-        parser.add_argument('--conf-thres', type=float, default=0.6, help='confidence threshold')
+        parser.add_argument('--conf-thres', type=float, default=0.7, help='confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
         parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -388,7 +393,7 @@ class Main(QtWidgets.QMainWindow):
     def button_camera_open(self):
         if not self.timer_video.isActive():
             # 默认使用第一个本地camera
-            flag = self.cap.open(0)
+            flag = self.cap.open(1)
             if flag == False:
                 QtWidgets.QMessageBox.warning(
                     self, u"Warning", u"Failed to open camera", buttons=QtWidgets.QMessageBox.Ok,
@@ -416,6 +421,8 @@ class Main(QtWidgets.QMainWindow):
             #           self.pushButton_stop.setDisabled(False)
             self.uiMain.pushButton_exit.setDisabled(False)
             self.uiMain.pushButton_sht.setText(u"Detect by Camera")
+
+        self.getDefault()
 
     # 暂停/继续 视频
     def button_video_stop(self):
@@ -456,7 +463,8 @@ class Setting(QtWidgets.QMainWindow):
         super(Setting, self).__init__()
         self.comboList = None
         self.optionsDefault = ['volumeUp', 'volumeDown', 'mediaPause', 'volumeMute', 'mediaPrevTrack',
-                               'mediaNextTrack', 'windowMinimize', 'windowMaximize', 'windowBackToscreen']
+                               'mediaNextTrack', 'windowMinimize', 'windowMaximize', 'windowBackToscreen',
+                               'pageUp', 'pageDown']
         self.config = configparser.ConfigParser()
         self.setWindowIcon(QIcon("images/UI/kk.png"))
         self.options = None

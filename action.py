@@ -43,6 +43,13 @@ def volumeMute():
     win32api.keybd_event(173, 0)
     win32api.keybd_event(173, 0, win32con.KEYEVENTF_KEYUP)
 
+def pageUp():
+    win32api.keybd_event(win32con.VK_PRIOR, 0)
+    win32api.keybd_event(win32con.VK_PRIOR, 0, win32con.KEYEVENTF_KEYUP)
+
+def pageDown():
+    win32api.keybd_event(win32con.VK_NEXT, 0)
+    win32api.keybd_event(win32con.VK_NEXT, 0, win32con.KEYEVENTF_KEYUP)
 
 # Mouse
 
