@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>724</height>
+    <width>571</width>
+    <height>749</height>
    </rect>
   </property>
   <property name="baseSize">
@@ -604,8 +604,7 @@ Last updated: 22/01/2019, 07:55.
 Available at: https://github.com/GTRONICK/QSS/blob/master/Aqua.qss
 */
 QMainWindow {
-	background-color:#ececec;
-}
+	background-color:#f7f4eb;}
 QTextEdit {
 	border-width: 1px;
 	border-style: solid;
@@ -778,11 +777,11 @@ QMenu::item {
 }
 QTabWidget {
 	color:rgb(0,0,0);
-	background-color:#000000;
+	background-color:#f7f4eb;
 }
 QTabWidget::pane {
 		border-color: rgb(223,223,223);
-		background-color:rgb(226,226,226);
+		background-color:#f7f4eb;
 		border-style: solid;
 		border-width: 2px;
     	border-radius: 6px;
@@ -801,7 +800,9 @@ QTabBar::tab:first {
 	color: #000000;
 	padding: 3px;
 	margin-left:0px;
-	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(247, 247, 247, 255), stop:1 rgba(255, 255, 255, 255));
+	background-color:#f7f4eb;
+/*
+	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(247, 247, 247, 255), stop:1 rgba(255, 255, 255, 255));*/
 }
 QTabBar::tab:last {
 	border-style: solid;
@@ -1154,7 +1155,72 @@ QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
 }
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
    background: none;
-}</string>
+}
+* {
+	outline: none;
+}
+
+QComboBox { /* 编辑框的样式 */
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 20px; /* 给下拉按钮在右侧腾出20px空间 */
+    border: 1px solid rgb(232,232,237);
+    border-radius: 5px;
+	color: rgb(60,60,60);
+    background-color: rgb(245,246,247);
+	selection-color: rgb(255,255,255); /* 文本选中时字体颜色 */
+	selection-background-color: rgb(30,200,255); /* 文本选中时背景颜色 */
+	font-family: &quot;Microsoft Yahei&quot;;
+	font-size: 11pt;
+	min-width: 150px;
+	min-height: 32px;
+}
+
+QComboBox:hover {
+    border: 1px solid rgb(252,25,68);
+}
+
+QComboBox:on {
+    padding-top: 4px; /* 改变padding可以实现文字浮动效果（编辑框处于不可编辑状态的情况下） */
+	padding-left: 6px;
+}
+
+QComboBox:disabled {
+    border: 1px solid rgb(160,160,160);
+	color: rgb(160,160,160);
+    background-color: rgb(232,232,237);
+}
+
+QComboBox::drop-down { /* 下拉按钮样式，默认在编辑框右上角 */
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px; /* 下拉按钮的宽度 */
+	border: none;
+}
+
+QComboBox::down-arrow { /* 下拉按钮中的箭头样式，默认在下拉按钮的居中位置 */
+    image: url(:/Resources/down.png); /* 箭头png为8x8大小，不要超过下拉按钮宽度 */
+}
+
+QComboBox::down-arrow:on, QComboBox::down-arrow:hover {
+	top: 1px; /* 实现箭头细微的浮动效果 */
+	left: 1px;
+    image: url(:/Resources/down_hover.png);
+}
+
+QComboBox QAbstractItemView { /* 下拉列表的样式 */
+	padding: 20px 0px 4px 0px;
+    border: 1px solid rgb(240,240,245);
+	border-radius: 0px;
+	color: rgb(60,60,60);
+	background-color: rgb(255,255,255);
+    selection-color: rgb(60,60,60); /* 选中项的字体颜色 */
+    selection-background-color: rgb(240,240,245); /* 选中项的背景颜色 */
+	font-family: &quot;Microsoft Yahei&quot;;
+	font-size: 10pt;
+}
+</string>
     </property>
     <property name="currentIndex">
      <number>1</number>
@@ -1169,7 +1235,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <x>30</x>
         <y>20</y>
         <width>481</width>
-        <height>221</height>
+        <height>281</height>
        </rect>
       </property>
       <property name="font">
@@ -1184,7 +1250,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>100</y>
+         <y>120</y>
          <width>60</width>
          <height>19</height>
         </rect>
@@ -1201,8 +1267,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <widget class="QSlider" name="horizontalSlider_travel">
        <property name="geometry">
         <rect>
-         <x>97</x>
-         <y>92</y>
+         <x>100</x>
+         <y>110</y>
          <width>311</width>
          <height>31</height>
         </rect>
@@ -1226,8 +1292,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <widget class="QLabel" name="label_commonHoldtime">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>70</y>
+         <x>250</x>
+         <y>80</y>
          <width>16</width>
          <height>16</height>
         </rect>
@@ -1242,8 +1308,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <widget class="QLabel" name="label_travel">
        <property name="geometry">
         <rect>
-         <x>240</x>
-         <y>130</y>
+         <x>250</x>
+         <y>150</y>
          <width>20</width>
          <height>20</height>
         </rect>
@@ -1258,7 +1324,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
       <widget class="QSlider" name="horizontalSlider_commonHoldtime">
        <property name="geometry">
         <rect>
-         <x>97</x>
+         <x>100</x>
          <y>41</y>
          <width>311</width>
          <height>31</height>
@@ -1298,6 +1364,65 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
         <string>HoldTime</string>
        </property>
       </widget>
+      <widget class="QSlider" name="horizontalSlider_cursorsens">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>180</y>
+         <width>311</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>5</number>
+       </property>
+       <property name="sliderPosition">
+        <number>5</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_8">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>190</y>
+         <width>60</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>微軟正黑體,Arial</family>
+        </font>
+       </property>
+       <property name="text">
+        <string>Cursor</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_cursorsens">
+       <property name="geometry">
+        <rect>
+         <x>250</x>
+         <y>220</y>
+         <width>20</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>5</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -1330,7 +1455,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <x>20</x>
             <y>40</y>
             <width>411</width>
-            <height>211</height>
+            <height>306</height>
            </rect>
           </property>
           <property name="font">
@@ -1355,7 +1480,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1388,7 +1514,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_3">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1409,7 +1536,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_4">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1430,7 +1558,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_5">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1439,7 +1568,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_2">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1477,7 +1607,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_11">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1527,7 +1658,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_12">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1565,7 +1697,8 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
             <widget class="QComboBox" name="comboBox_13">
              <property name="font">
               <font>
-               <family>微軟正黑體,Arial</family>
+               <family>Microsoft Yahei</family>
+               <pointsize>11</pointsize>
               </font>
              </property>
             </widget>
@@ -1576,11 +1709,6 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
        </item>
       </layout>
      </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>Help</string>
-     </attribute>
     </widget>
    </widget>
   </widget>

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
-    <height>453</height>
+    <width>658</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@ Available at: https://github.com/GTRONICK/QSS/blob/master/Ubuntu.qss
     font-family: 微軟正黑體, Arial; /* 设置字体族名称 */
 }
 QMainWindow {
-	background-color:#f0f0f0;
+	background-color:#f7f4eb;
 	border-radius: 10px;
 }
 QCheckBox {
@@ -154,7 +154,7 @@ QProgressBar::chunk:horizontal {
 	border-left-color:qlineargradient(spread:pad, x1:1, y1:0.5, x2:0, y2:0.5, stop:0 rgba(253,156,113,255), stop:1 rgba(205,90,46, 255));
 }
 QPushButton{
-	color:rgb(17,17,17);
+	/*color:rgb(17,17,17);
 	border-width: 1px;
 	border-radius: 6px;
 	border-bottom-color: rgb(150,150,150);
@@ -163,10 +163,31 @@ QPushButton{
 	border-top-color: rgb(180,180,180);
 	border-style: solid;
 	padding: 4px;
-	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));
+	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/
+background-color: #FFFFFF;
+  border: 1px solid #222222;
+  border-radius: 8px;
+  /*box-sizing: border-box;*/
+  color: #222222;
+  /*cursor: pointer;
+  display: inline-block;*/
+font-family: 微軟正黑體, Arial;   font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  padding: 13px 23px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  /*touch-action: manipulation;
+  transition: box-shadow .2s,-ms-transform .1s,-webkit-transform .1s,transform .1s;
+  user-select: none;
+  -webkit-user-select: none;*/
+  width: auto;
 }
 QPushButton:hover{
-	color:rgb(17,17,17);
+	/*color:rgb(17,17,17);
 	border-width: 1px;
 	border-radius:6px;
 	border-top-color: rgb(255,150,60);
@@ -175,7 +196,11 @@ QPushButton:hover{
 	border-bottom-color: rgb(200,70,20);
 	border-style: solid;
 	padding: 2px;
-	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));
+	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/
+  color: #fff;
+  background-color: #1A1A1A;
+  /*box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);*/
 }
 QPushButton:default{
 	color:rgb(17,17,17);
@@ -190,7 +215,7 @@ QPushButton:default{
 	background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));
 }
 QPushButton:pressed{
-	color:rgb(17,17,17);
+	/*color:rgb(17,17,17);
 	border-width: 1px;
 	border-radius: 6px;
 	border-width: 1px;
@@ -200,7 +225,10 @@ QPushButton:pressed{
 	border-bottom-color: rgba(200,70,20,200);
 	border-style: solid;
 	padding: 2px;
-	background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));
+	background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/
+background-color: #F7F7F7;
+  border-color: #000000;
+  /*transform: scale(.96);*/
 }
 QPushButton:disabled{
 	color:rgb(174,167,159);
@@ -525,7 +553,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0">
       <property name="spacing">
        <number>5</number>
       </property>
@@ -536,7 +564,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
        <number>0</number>
       </property>
       <property name="rightMargin">
-       <number>10</number>
+       <number>0</number>
       </property>
       <item>
        <widget class="QPushButton" name="pushButton_pt">
@@ -565,7 +593,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
          </size>
         </property>
         <property name="text">
-         <string>Select weights</string>
+         <string>Select</string>
         </property>
        </widget>
       </item>
@@ -590,7 +618,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
          </size>
         </property>
         <property name="text">
-         <string>Model initialize</string>
+         <string>Initialize</string>
         </property>
        </widget>
       </item>
@@ -617,35 +645,15 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
         <property name="font">
          <font>
           <family>微軟正黑體,Arial</family>
+          <pointsize>-1</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+          <underline>false</underline>
+          <strikeout>false</strikeout>
          </font>
         </property>
         <property name="text">
-         <string>Open Camera</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_exit">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>40</width>
-          <height>60</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>160</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Stop</string>
+         <string>Camera</string>
         </property>
        </widget>
       </item>
@@ -662,7 +670,7 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
         </property>
         <property name="maximumSize">
          <size>
-          <width>160</width>
+          <width>165</width>
           <height>100</height>
          </size>
         </property>
@@ -728,28 +736,6 @@ QTimeEdit, QToolBox, QToolBox::tab, QToolBox::tab:selected {
       </property>
       <property name="margin">
        <number>1</number>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>320</height>
-       </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: rgb(255, 255, 255);</string>
-      </property>
-      <property name="text">
-       <string>log</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="margin">
-       <number>5</number>
       </property>
      </widget>
     </item>

@@ -176,8 +176,8 @@ class Main(QtWidgets.QMainWindow):
         if not self.openfile_name_model:
             QtWidgets.QMessageBox.warning(self, u"Warning", u"Failed to open weights", buttons=QtWidgets.QMessageBox.Ok,
                                           defaultButton=QtWidgets.QMessageBox.Ok)
-        else:
-            self.uiMain.label_2.setText('Weights path：' + str(self.openfile_name_model))
+        #else:
+        #    self.uiMain.label_2.setText('Weights path：' + str(self.openfile_name_model))
 
     # 模型初始化
     def model_init(self):
@@ -407,8 +407,8 @@ class Main(QtWidgets.QMainWindow):
                 self.uiMain.pushButton_init.setDisabled(True)
                 self.uiMain.pushButton_pt.setDisabled(True)
                 #                self.pushButton_stop.setDisabled(True)
-                self.uiMain.pushButton_exit.setDisabled(True)
-                self.uiMain.pushButton_sht.setText(u"Turn off camera")
+                #self.uiMain.pushButton_exit.setDisabled(True)
+                self.uiMain.pushButton_sht.setText(u"Turn off")
         else:
             self.timer_video.stop()
             self.cap.release()
@@ -419,8 +419,8 @@ class Main(QtWidgets.QMainWindow):
             self.uiMain.pushButton_init.setDisabled(False)
             self.uiMain.pushButton_pt.setDisabled(False)
             #           self.pushButton_stop.setDisabled(False)
-            self.uiMain.pushButton_exit.setDisabled(False)
-            self.uiMain.pushButton_sht.setText(u"Detect by Camera")
+            #self.uiMain.pushButton_exit.setDisabled(False)
+            self.uiMain.pushButton_sht.setText(u"Camera")
 
         self.getDefault()
 

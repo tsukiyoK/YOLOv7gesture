@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(667, 576)
+        MainWindow.resize(658, 406)
         MainWindow.setStyleSheet("/*\n"
 "Ubuntu Style Sheet for QT Applications\n"
 "Author: Jaime A. Quiroga P.\n"
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
 "    font-family: 微軟正黑體, Arial; /* 设置字体族名称 */\n"
 "}\n"
 "QMainWindow {\n"
-"    background-color:#f0f0f0;\n"
+"    background-color:#f7f4eb;\n"
 "    border-radius: 10px;\n"
 "}\n"
 "QCheckBox {\n"
@@ -153,7 +153,7 @@ class Ui_MainWindow(object):
 "    border-left-color:qlineargradient(spread:pad, x1:1, y1:0.5, x2:0, y2:0.5, stop:0 rgba(253,156,113,255), stop:1 rgba(205,90,46, 255));\n"
 "}\n"
 "QPushButton{\n"
-"    color:rgb(17,17,17);\n"
+"    /*color:rgb(17,17,17);\n"
 "    border-width: 1px;\n"
 "    border-radius: 6px;\n"
 "    border-bottom-color: rgb(150,150,150);\n"
@@ -162,10 +162,31 @@ class Ui_MainWindow(object):
 "    border-top-color: rgb(180,180,180);\n"
 "    border-style: solid;\n"
 "    padding: 4px;\n"
-"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/\n"
+"background-color: #FFFFFF;\n"
+"  border: 1px solid #222222;\n"
+"  border-radius: 8px;\n"
+"  /*box-sizing: border-box;*/\n"
+"  color: #222222;\n"
+"  /*cursor: pointer;\n"
+"  display: inline-block;*/\n"
+"font-family: 微軟正黑體, Arial;   font-size: 16px;\n"
+"  font-weight: 600;\n"
+"  line-height: 20px;\n"
+"  margin: 0;\n"
+"  outline: none;\n"
+"  padding: 13px 23px;\n"
+"  position: relative;\n"
+"  text-align: center;\n"
+"  text-decoration: none;\n"
+"  /*touch-action: manipulation;\n"
+"  transition: box-shadow .2s,-ms-transform .1s,-webkit-transform .1s,transform .1s;\n"
+"  user-select: none;\n"
+"  -webkit-user-select: none;*/\n"
+"  width: auto;\n"
 "}\n"
 "QPushButton:hover{\n"
-"    color:rgb(17,17,17);\n"
+"    /*color:rgb(17,17,17);\n"
 "    border-width: 1px;\n"
 "    border-radius:6px;\n"
 "    border-top-color: rgb(255,150,60);\n"
@@ -174,7 +195,11 @@ class Ui_MainWindow(object):
 "    border-bottom-color: rgb(200,70,20);\n"
 "    border-style: solid;\n"
 "    padding: 2px;\n"
-"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/\n"
+"  color: #fff;\n"
+"  background-color: #1A1A1A;\n"
+"  /*box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;\n"
+"  transform: translateY(-2px);*/\n"
 "}\n"
 "QPushButton:default{\n"
 "    color:rgb(17,17,17);\n"
@@ -189,7 +214,7 @@ class Ui_MainWindow(object):
 "    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));\n"
 "}\n"
 "QPushButton:pressed{\n"
-"    color:rgb(17,17,17);\n"
+"    /*color:rgb(17,17,17);\n"
 "    border-width: 1px;\n"
 "    border-radius: 6px;\n"
 "    border-width: 1px;\n"
@@ -199,7 +224,10 @@ class Ui_MainWindow(object):
 "    border-bottom-color: rgba(200,70,20,200);\n"
 "    border-style: solid;\n"
 "    padding: 2px;\n"
-"    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"    background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(220, 220, 220, 255), stop:1 rgba(255, 255, 255, 255));*/\n"
+"background-color: #F7F7F7;\n"
+"  border-color: #000000;\n"
+"  /*transform: scale(.96);*/\n"
 "}\n"
 "QPushButton:disabled{\n"
 "    color:rgb(174,167,159);\n"
@@ -520,15 +548,14 @@ class Ui_MainWindow(object):
         MainWindow.setAnimated(False)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(11, 11, 651, 62))
-        self.widget.setObjectName("widget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.widget)
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
-        self.horizontalLayout.setContentsMargins(0, 0, 10, 0)
+        self.horizontalLayout.setContentsMargins(0, -1, 0, -1)
         self.horizontalLayout.setSpacing(5)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_pt = QtWidgets.QPushButton(self.widget)
+        self.pushButton_pt = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -539,7 +566,7 @@ class Ui_MainWindow(object):
         self.pushButton_pt.setSizeIncrement(QtCore.QSize(8, 5))
         self.pushButton_pt.setObjectName("pushButton_pt")
         self.horizontalLayout.addWidget(self.pushButton_pt)
-        self.pushButton_init = QtWidgets.QPushButton(self.widget)
+        self.pushButton_init = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -549,7 +576,7 @@ class Ui_MainWindow(object):
         self.pushButton_init.setMaximumSize(QtCore.QSize(160, 100))
         self.pushButton_init.setObjectName("pushButton_init")
         self.horizontalLayout.addWidget(self.pushButton_init)
-        self.pushButton_sht = QtWidgets.QPushButton(self.widget)
+        self.pushButton_sht = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -559,38 +586,27 @@ class Ui_MainWindow(object):
         self.pushButton_sht.setMaximumSize(QtCore.QSize(160, 100))
         font = QtGui.QFont()
         font.setFamily("微軟正黑體,Arial")
+        font.setPointSize(-1)
+        font.setBold(True)
+        font.setUnderline(False)
+        font.setWeight(75)
+        font.setStrikeOut(False)
         self.pushButton_sht.setFont(font)
         self.pushButton_sht.setObjectName("pushButton_sht")
         self.horizontalLayout.addWidget(self.pushButton_sht)
-        self.pushButton_exit = QtWidgets.QPushButton(self.widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_exit.sizePolicy().hasHeightForWidth())
-        self.pushButton_exit.setSizePolicy(sizePolicy)
-        self.pushButton_exit.setMinimumSize(QtCore.QSize(40, 60))
-        self.pushButton_exit.setMaximumSize(QtCore.QSize(160, 100))
-        self.pushButton_exit.setObjectName("pushButton_exit")
-        self.horizontalLayout.addWidget(self.pushButton_exit)
-        self.pushButton_setting = QtWidgets.QPushButton(self.widget)
+        self.pushButton_setting = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_setting.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton_setting.sizePolicy().hasHeightForWidth())
         self.pushButton_setting.setSizePolicy(sizePolicy)
-        self.pushButton_setting.setMaximumSize(QtCore.QSize(160, 100))
+        self.pushButton_setting.setMaximumSize(QtCore.QSize(165, 100))
         self.pushButton_setting.setObjectName("pushButton_setting")
         self.horizontalLayout.addWidget(self.pushButton_setting)
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(10, 430, 641, 101))
-        self.label_2.setMaximumSize(QtCore.QSize(16777215, 320))
-        self.label_2.setStyleSheet("background-color: rgb(255, 255, 255);")
-        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_2.setObjectName("label_2")
+        self.gridLayout.addLayout(self.horizontalLayout, 0, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setEnabled(True)
-        self.label.setGeometry(QtCore.QRect(10, 90, 640, 320))
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(16)
         sizePolicy.setVerticalStretch(9)
@@ -606,6 +622,7 @@ class Ui_MainWindow(object):
         self.label.setTextFormat(QtCore.Qt.RichText)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -614,12 +631,10 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "GestureController"))
-        self.pushButton_pt.setText(_translate("MainWindow", "Select weights"))
-        self.pushButton_init.setText(_translate("MainWindow", "Model initialize"))
-        self.pushButton_sht.setText(_translate("MainWindow", "Open Camera"))
-        self.pushButton_exit.setText(_translate("MainWindow", "Stop"))
+        self.pushButton_pt.setText(_translate("MainWindow", "Select"))
+        self.pushButton_init.setText(_translate("MainWindow", "Initialize"))
+        self.pushButton_sht.setText(_translate("MainWindow", "Camera"))
         self.pushButton_setting.setText(_translate("MainWindow", "Setting"))
-        self.label_2.setText(_translate("MainWindow", "log"))
         self.label.setText(_translate("MainWindow", "Preview"))
 
 

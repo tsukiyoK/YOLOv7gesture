@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Setting(object):
     def setupUi(self, Setting):
         Setting.setObjectName("Setting")
-        Setting.resize(520, 757)
+        Setting.resize(530, 751)
         Setting.setBaseSize(QtCore.QSize(0, 2))
         Setting.setStyleSheet("/*\n"
 "Aqua Style Sheet for QT Applications\n"
@@ -592,8 +592,7 @@ class Ui_Setting(object):
 "Available at: https://github.com/GTRONICK/QSS/blob/master/Aqua.qss\n"
 "*/\n"
 "QMainWindow {\n"
-"    background-color:#ececec;\n"
-"}\n"
+"    background-color:#f7f4eb;}\n"
 "QTextEdit {\n"
 "    border-width: 1px;\n"
 "    border-style: solid;\n"
@@ -766,11 +765,11 @@ class Ui_Setting(object):
 "}\n"
 "QTabWidget {\n"
 "    color:rgb(0,0,0);\n"
-"    background-color:#000000;\n"
+"    background-color:#f7f4eb;\n"
 "}\n"
 "QTabWidget::pane {\n"
 "        border-color: rgb(223,223,223);\n"
-"        background-color:rgb(226,226,226);\n"
+"        background-color:#f7f4eb;\n"
 "        border-style: solid;\n"
 "        border-width: 2px;\n"
 "        border-radius: 6px;\n"
@@ -789,7 +788,9 @@ class Ui_Setting(object):
 "    color: #000000;\n"
 "    padding: 3px;\n"
 "    margin-left:0px;\n"
-"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(247, 247, 247, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"    background-color:#f7f4eb;\n"
+"/*\n"
+"    background-color: qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(247, 247, 247, 255), stop:1 rgba(255, 255, 255, 255));*/\n"
 "}\n"
 "QTabBar::tab:last {\n"
 "    border-style: solid;\n"
@@ -1142,24 +1143,89 @@ class Ui_Setting(object):
 "}\n"
 "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {\n"
 "   background: none;\n"
-"}")
+"}\n"
+"* {\n"
+"    outline: none;\n"
+"}\n"
+"\n"
+"QComboBox { /* 编辑框的样式 */\n"
+"    padding-top: 2px;\n"
+"    padding-bottom: 2px;\n"
+"    padding-left: 4px;\n"
+"    padding-right: 20px; /* 给下拉按钮在右侧腾出20px空间 */\n"
+"    border: 1px solid rgb(232,232,237);\n"
+"    border-radius: 5px;\n"
+"    color: rgb(60,60,60);\n"
+"    background-color: rgb(245,246,247);\n"
+"    selection-color: rgb(255,255,255); /* 文本选中时字体颜色 */\n"
+"    selection-background-color: rgb(30,200,255); /* 文本选中时背景颜色 */\n"
+"    font-family: \"Microsoft Yahei\";\n"
+"    font-size: 11pt;\n"
+"    min-width: 150px;\n"
+"    min-height: 32px;\n"
+"}\n"
+"\n"
+"QComboBox:hover {\n"
+"    border: 1px solid rgb(252,25,68);\n"
+"}\n"
+"\n"
+"QComboBox:on {\n"
+"    padding-top: 4px; /* 改变padding可以实现文字浮动效果（编辑框处于不可编辑状态的情况下） */\n"
+"    padding-left: 6px;\n"
+"}\n"
+"\n"
+"QComboBox:disabled {\n"
+"    border: 1px solid rgb(160,160,160);\n"
+"    color: rgb(160,160,160);\n"
+"    background-color: rgb(232,232,237);\n"
+"}\n"
+"\n"
+"QComboBox::drop-down { /* 下拉按钮样式，默认在编辑框右上角 */\n"
+"    subcontrol-origin: padding;\n"
+"    subcontrol-position: top right;\n"
+"    width: 20px; /* 下拉按钮的宽度 */\n"
+"    border: none;\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow { /* 下拉按钮中的箭头样式，默认在下拉按钮的居中位置 */\n"
+"    image: url(:/Resources/down.png); /* 箭头png为8x8大小，不要超过下拉按钮宽度 */\n"
+"}\n"
+"\n"
+"QComboBox::down-arrow:on, QComboBox::down-arrow:hover {\n"
+"    top: 1px; /* 实现箭头细微的浮动效果 */\n"
+"    left: 1px;\n"
+"    image: url(:/Resources/down_hover.png);\n"
+"}\n"
+"\n"
+"QComboBox QAbstractItemView { /* 下拉列表的样式 */\n"
+"    padding: 20px 0px 4px 0px;\n"
+"    border: 1px solid rgb(240,240,245);\n"
+"    border-radius: 0px;\n"
+"    color: rgb(60,60,60);\n"
+"    background-color: rgb(255,255,255);\n"
+"    selection-color: rgb(60,60,60); /* 选中项的字体颜色 */\n"
+"    selection-background-color: rgb(240,240,245); /* 选中项的背景颜色 */\n"
+"    font-family: \"Microsoft Yahei\";\n"
+"    font-size: 10pt;\n"
+"}\n"
+"")
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.groupBox_2 = QtWidgets.QGroupBox(self.tab)
-        self.groupBox_2.setGeometry(QtCore.QRect(30, 20, 481, 221))
+        self.groupBox_2.setGeometry(QtCore.QRect(30, 20, 481, 281))
         font = QtGui.QFont()
         font.setFamily("微軟正黑體,Arial")
         self.groupBox_2.setFont(font)
         self.groupBox_2.setObjectName("groupBox_2")
         self.label_7 = QtWidgets.QLabel(self.groupBox_2)
-        self.label_7.setGeometry(QtCore.QRect(20, 100, 60, 19))
+        self.label_7.setGeometry(QtCore.QRect(20, 120, 60, 19))
         font = QtGui.QFont()
         font.setFamily("微軟正黑體,Arial")
         self.label_7.setFont(font)
         self.label_7.setObjectName("label_7")
         self.horizontalSlider_travel = QtWidgets.QSlider(self.groupBox_2)
-        self.horizontalSlider_travel.setGeometry(QtCore.QRect(97, 92, 311, 31))
+        self.horizontalSlider_travel.setGeometry(QtCore.QRect(100, 110, 311, 31))
         self.horizontalSlider_travel.setMinimum(0)
         self.horizontalSlider_travel.setMaximum(10)
         self.horizontalSlider_travel.setProperty("value", 5)
@@ -1167,15 +1233,15 @@ class Ui_Setting(object):
         self.horizontalSlider_travel.setOrientation(QtCore.Qt.Horizontal)
         self.horizontalSlider_travel.setObjectName("horizontalSlider_travel")
         self.label_commonHoldtime = QtWidgets.QLabel(self.groupBox_2)
-        self.label_commonHoldtime.setGeometry(QtCore.QRect(240, 70, 16, 16))
+        self.label_commonHoldtime.setGeometry(QtCore.QRect(250, 80, 16, 16))
         self.label_commonHoldtime.setAlignment(QtCore.Qt.AlignCenter)
         self.label_commonHoldtime.setObjectName("label_commonHoldtime")
         self.label_travel = QtWidgets.QLabel(self.groupBox_2)
-        self.label_travel.setGeometry(QtCore.QRect(240, 130, 20, 20))
+        self.label_travel.setGeometry(QtCore.QRect(250, 150, 20, 20))
         self.label_travel.setAlignment(QtCore.Qt.AlignCenter)
         self.label_travel.setObjectName("label_travel")
         self.horizontalSlider_commonHoldtime = QtWidgets.QSlider(self.groupBox_2)
-        self.horizontalSlider_commonHoldtime.setGeometry(QtCore.QRect(97, 41, 311, 31))
+        self.horizontalSlider_commonHoldtime.setGeometry(QtCore.QRect(100, 41, 311, 31))
         self.horizontalSlider_commonHoldtime.setMinimum(0)
         self.horizontalSlider_commonHoldtime.setMaximum(10)
         self.horizontalSlider_commonHoldtime.setProperty("value", 5)
@@ -1188,6 +1254,24 @@ class Ui_Setting(object):
         font.setFamily("微軟正黑體,Arial")
         self.label_6.setFont(font)
         self.label_6.setObjectName("label_6")
+        self.horizontalSlider_cursorsens = QtWidgets.QSlider(self.groupBox_2)
+        self.horizontalSlider_cursorsens.setGeometry(QtCore.QRect(100, 180, 311, 31))
+        self.horizontalSlider_cursorsens.setMinimum(0)
+        self.horizontalSlider_cursorsens.setMaximum(10)
+        self.horizontalSlider_cursorsens.setProperty("value", 5)
+        self.horizontalSlider_cursorsens.setSliderPosition(5)
+        self.horizontalSlider_cursorsens.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider_cursorsens.setObjectName("horizontalSlider_cursorsens")
+        self.label_8 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_8.setGeometry(QtCore.QRect(20, 190, 60, 19))
+        font = QtGui.QFont()
+        font.setFamily("微軟正黑體,Arial")
+        self.label_8.setFont(font)
+        self.label_8.setObjectName("label_8")
+        self.label_cursorsens = QtWidgets.QLabel(self.groupBox_2)
+        self.label_cursorsens.setGeometry(QtCore.QRect(250, 220, 20, 20))
+        self.label_cursorsens.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_cursorsens.setObjectName("label_cursorsens")
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
@@ -1203,7 +1287,7 @@ class Ui_Setting(object):
         self.groupBox.setFont(font)
         self.groupBox.setObjectName("groupBox")
         self.formLayoutWidget = QtWidgets.QWidget(self.groupBox)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(20, 40, 411, 211))
+        self.formLayoutWidget.setGeometry(QtCore.QRect(20, 40, 411, 306))
         font = QtGui.QFont()
         font.setFamily("微軟正黑體,Arial")
         self.formLayoutWidget.setFont(font)
@@ -1219,7 +1303,8 @@ class Ui_Setting(object):
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
         self.comboBox = QtWidgets.QComboBox(self.formLayoutWidget)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox.setFont(font)
         self.comboBox.setObjectName("comboBox")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox)
@@ -1237,7 +1322,8 @@ class Ui_Setting(object):
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
         self.comboBox_3 = QtWidgets.QComboBox(self.formLayoutWidget)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_3.setFont(font)
         self.comboBox_3.setObjectName("comboBox_3")
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.comboBox_3)
@@ -1249,7 +1335,8 @@ class Ui_Setting(object):
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_4)
         self.comboBox_4 = QtWidgets.QComboBox(self.formLayoutWidget)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_4.setFont(font)
         self.comboBox_4.setObjectName("comboBox_4")
         self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.comboBox_4)
@@ -1261,13 +1348,15 @@ class Ui_Setting(object):
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.label_5)
         self.comboBox_5 = QtWidgets.QComboBox(self.formLayoutWidget)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_5.setFont(font)
         self.comboBox_5.setObjectName("comboBox_5")
         self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.comboBox_5)
         self.comboBox_2 = QtWidgets.QComboBox(self.formLayoutWidget)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_2.setFont(font)
         self.comboBox_2.setObjectName("comboBox_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.comboBox_2)
@@ -1288,7 +1377,8 @@ class Ui_Setting(object):
         self.formLayout_4.setObjectName("formLayout_4")
         self.comboBox_11 = QtWidgets.QComboBox(self.formLayoutWidget_3)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_11.setFont(font)
         self.comboBox_11.setObjectName("comboBox_11")
         self.formLayout_4.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_11)
@@ -1316,7 +1406,8 @@ class Ui_Setting(object):
         self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label_14)
         self.comboBox_12 = QtWidgets.QComboBox(self.formLayoutWidget_4)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_12.setFont(font)
         self.comboBox_12.setObjectName("comboBox_12")
         self.formLayout_5.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_12)
@@ -1337,7 +1428,8 @@ class Ui_Setting(object):
         self.formLayout_6.setObjectName("formLayout_6")
         self.comboBox_13 = QtWidgets.QComboBox(self.formLayoutWidget_5)
         font = QtGui.QFont()
-        font.setFamily("微軟正黑體,Arial")
+        font.setFamily("Microsoft Yahei")
+        font.setPointSize(11)
         self.comboBox_13.setFont(font)
         self.comboBox_13.setObjectName("comboBox_13")
         self.formLayout_6.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_13)
@@ -1353,7 +1445,7 @@ class Ui_Setting(object):
         Setting.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(Setting)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Setting)
 
     def retranslateUi(self, Setting):
@@ -1364,6 +1456,8 @@ class Ui_Setting(object):
         self.label_commonHoldtime.setText(_translate("Setting", "5"))
         self.label_travel.setText(_translate("Setting", "5"))
         self.label_6.setText(_translate("Setting", "HoldTime"))
+        self.label_8.setText(_translate("Setting", "Cursor"))
+        self.label_cursorsens.setText(_translate("Setting", "5"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Setting", "Common"))
         self.groupBox.setTitle(_translate("Setting", "Gesture 5"))
         self.label.setText(_translate("Setting", "上"))
