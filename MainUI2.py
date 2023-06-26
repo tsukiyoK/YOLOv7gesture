@@ -1,4 +1,5 @@
 import argparse
+import ctypes
 import random
 import sys
 import configparser
@@ -26,7 +27,7 @@ from ui_2 import Ui_MainWindow
 
 
 class Main(QtWidgets.QMainWindow):
-    def __init__(self, parent=None, play_cd=1):
+    def __init__(self, parent=None, play_cd=0.8):
         super(Main, self).__init__(parent)
         self.gestureActions = None
         self.config = configparser.ConfigParser()
@@ -57,9 +58,10 @@ class Main(QtWidgets.QMainWindow):
         if label == '1':
             self.mouseMovement(det)
         elif label == '2':
-            if not self.is2hold:
-                mouseLeftHold()
-                self.is2hold = True
+            if checkCD(time.time(), 0.5, 2):
+                if not self.is2hold:
+                    mouseLeftHold()
+                    self.is2hold = True
 
         elif label == '0':
             if checkCD(time.time(), self.play_cd, 0):
@@ -123,8 +125,14 @@ class Main(QtWidgets.QMainWindow):
                 x, y = self.mouse_history[7]
                 new_x, new_y = self.mouse_history[9]
                 val_x, val_y = new_x-x, new_y-y
-                current_x, current_y = win32api.GetCursorPos()
-                win32api.SetCursorPos((current_x-(int(self.cursorSens)*val_x), current_y+(int(self.cursorSens)*val_y)))  # 設置滑鼠座標
+                #current_x, current_y = win32api.GetCursorPos()
+                current_pos = ctypes.wintypes.POINT()
+                ctypes.windll.user32.GetCursorPos(ctypes.byref(current_pos))
+                ctypes.windll.user32.SetCursorPos(
+                    ctypes.c_int(current_pos.x - (int(self.cursorSens) * val_x)),
+                    ctypes.c_int(current_pos.y + (int(self.cursorSens) * val_y))
+                )
+                #win32api.SetCursorPos((current_x-(int(self.cursorSens)*val_x), current_y+(int(self.cursorSens)*val_y)))  # 設置滑鼠座標
                 self.mouse_history.pop(0)
             else:
                 self.mouse_history.append((x2, int(y2 - h2 // 2)))
@@ -188,7 +196,7 @@ class Main(QtWidgets.QMainWindow):
         parser.add_argument('--data', type=str, default='data/coco128.yaml', help='(optional) dataset.yaml path')
         parser.add_argument('--img-size', nargs='+', type=int, default=640,
                             help='inference size h,w')
-        parser.add_argument('--conf-thres', type=float, default=0.7, help='confidence threshold')
+        parser.add_argument('--conf-thres', type=float, default=0.6, help='confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
         parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -359,7 +367,7 @@ class Main(QtWidgets.QMainWindow):
                             L = self.names[int(cls)]
                             label = '%s %.2f' % (self.names[int(cls)], conf)
                             name_list.append(self.names[int(cls)])
-                            self.uiMain.label_2.setText(label)  # PyQT页面打印类别和置信度
+                            #self.uiMain.label_2.setText(label)  # PyQT页面打印类别和置信度
                             plot_one_box(
                                 xyxy, showimg, label=label, color=self.colors[int(cls)], line_thickness=2)
                             self.action(L, det)
