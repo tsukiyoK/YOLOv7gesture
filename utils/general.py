@@ -31,6 +31,9 @@ os.environ['NUMEXPR_MAX_THREADS'] = str(min(os.cpu_count(), 8))  # NumExpr max t
 last_time = None
 authSign = None
 isHold = False
+last_time5 = None
+
+
 def set_logging(rank=-1):
     logging.basicConfig(
         format="%(message)s",
@@ -81,6 +84,29 @@ def checkCD(current_time, trigger_time, auth):
         return 0
 
 
+def checkCD5(current_time, trigger_time):
+    global last_time5
+
+    if last_time5 is None:
+        last_time5 = current_time
+        return 0
+
+    time_diff = current_time - last_time5
+
+    if 2.5 >= time_diff >= trigger_time:
+        last_time5 = None
+        return 1
+    if time_diff > 2.5:
+        last_time5 = current_time
+        return 0
+
+
+def resetLastTime5():
+    global last_time5
+    last_time5 = None
+    return 0
+
+
 def check2Hold():
     global isHold
     if isHold:
@@ -97,16 +123,20 @@ def set2Hold():
 def checkWay(x1, x2, y1, y2, sens):
     x_val = x1 - x2
     y_val = y2 - y1
-    xs = sens
+    xs = sens * 0.7
     ys = sens * 0.6
     if abs(x_val) < xs and abs(y_val) < ys:
         return 0
     elif abs(x_val) > abs(y_val):
-        if x_val > 0 :return 4
-        elif x_val < 0 : return 3
-    else:
-        if y_val > 0 : return 2
-        elif y_val < 0 : return 1
+        if x_val > 0:
+            return 4
+        elif x_val < 0:
+            return 3
+    elif abs(x_val) < abs(y_val):
+        if y_val > 0:
+            return 2
+        elif y_val < 0:
+            return 1
 
 
 def check_online():
@@ -436,8 +466,6 @@ def bbox_iou(box1, box2, x1y1x2y2=True, GIoU=False, DIoU=False, CIoU=False, eps=
         return iou  # IoU
 
 
-
-
 def bbox_alpha_iou(box1, box2, x1y1x2y2=False, GIoU=False, DIoU=False, CIoU=False, alpha=2, eps=1e-9):
     # Returns tsqrt_he IoU of box1 to box2. box1 is 4, box2 is nx4
     box2 = box2.T
@@ -463,7 +491,7 @@ def bbox_alpha_iou(box1, box2, x1y1x2y2=False, GIoU=False, DIoU=False, CIoU=Fals
 
     # change iou into pow(iou+eps)
     # iou = inter / union
-    iou = torch.pow(inter/union + eps, alpha)
+    iou = torch.pow(inter / union + eps, alpha)
     # beta = 2 * alpha
     if GIoU or DIoU or CIoU:
         cw = torch.max(b1_x2, b2_x2) - torch.min(b1_x1, b2_x1)  # convex (smallest enclosing box) width
@@ -484,10 +512,10 @@ def bbox_alpha_iou(box1, box2, x1y1x2y2=False, GIoU=False, DIoU=False, CIoU=Fals
         else:  # GIoU https://arxiv.org/pdf/1902.09630.pdf
             # c_area = cw * ch + eps  # convex area
             # return iou - (c_area - union) / c_area  # GIoU
-            c_area = torch.max(cw * ch + eps, union) # convex area
+            c_area = torch.max(cw * ch + eps, union)  # convex area
             return iou - torch.pow((c_area - union) / c_area + eps, alpha)  # GIoU
     else:
-        return iou # torch.log(iou+eps) or iou
+        return iou  # torch.log(iou+eps) or iou
 
 
 def box_iou(box1, box2):
@@ -745,15 +773,16 @@ def non_max_suppression(prediction, conf_thres=0.25, iou_thres=0.45, classes=Non
     return output
 
 
-def non_max_suppression_kpt(prediction, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False, multi_label=False,
-                        labels=(), kpt_label=False, nc=None, nkpt=None):
+def non_max_suppression_kpt(prediction, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False,
+                            multi_label=False,
+                            labels=(), kpt_label=False, nc=None, nkpt=None):
     """Runs Non-Maximum Suppression (NMS) on inference results
 
     Returns:
          list of detections, on (n,6) tensor per image [xyxy, conf, cls]
     """
     if nc is None:
-        nc = prediction.shape[2] - 5  if not kpt_label else prediction.shape[2] - 56 # number of classes
+        nc = prediction.shape[2] - 5 if not kpt_label else prediction.shape[2] - 56  # number of classes
     xc = prediction[..., 4] > conf_thres  # candidates
 
     # Settings
@@ -766,7 +795,7 @@ def non_max_suppression_kpt(prediction, conf_thres=0.25, iou_thres=0.45, classes
     merge = False  # use merge-NMS
 
     t = time.time()
-    output = [torch.zeros((0,6), device=prediction.device)] * prediction.shape[0]
+    output = [torch.zeros((0, 6), device=prediction.device)] * prediction.shape[0]
     for xi, x in enumerate(prediction):  # image index, image inference
         # Apply constraints
         # x[((x[..., 2:4] < min_wh) | (x[..., 2:4] > max_wh)).any(1), 4] = 0  # width-height
@@ -786,7 +815,7 @@ def non_max_suppression_kpt(prediction, conf_thres=0.25, iou_thres=0.45, classes
             continue
 
         # Compute conf
-        x[:, 5:5+nc] *= x[:, 4:5]  # conf = obj_conf * cls_conf
+        x[:, 5:5 + nc] *= x[:, 4:5]  # conf = obj_conf * cls_conf
 
         # Box (center x, center y, width, height) to (x1, y1, x2, y2)
         box = xywh2xyxy(x[:, :4])
@@ -803,7 +832,6 @@ def non_max_suppression_kpt(prediction, conf_thres=0.25, iou_thres=0.45, classes
                 kpts = x[:, 6:]
                 conf, j = x[:, 5:6].max(1, keepdim=True)
                 x = torch.cat((box, conf, j.float(), kpts), 1)[conf.view(-1) > conf_thres]
-
 
         # Filter by class
         if classes is not None:

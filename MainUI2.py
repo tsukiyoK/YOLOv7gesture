@@ -18,7 +18,8 @@ from PyQt5.QtWidgets import QApplication, QFileDialog
 
 from models.experimental import attempt_load
 from utils.datasets import letterbox
-from utils.general import check_img_size, non_max_suppression, scale_coords, xyxy2xywh, checkWay, checkCD, check2Hold, set2Hold
+from utils.general import check_img_size, non_max_suppression, scale_coords, xyxy2xywh, \
+     checkWay, checkCD, checkCD5, resetLastTime5
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device
 from action import *
@@ -47,7 +48,6 @@ class Main(QtWidgets.QMainWindow):
         self.gesture_locate = []
         self.history_pop = [(310, 155)]
         self.mouse_point = (0, 0)
-        self.play_cd = play_cd
         self.is2hold = False
         # 权重初始文件名
         self.openfile_name_model = None
@@ -64,23 +64,29 @@ class Main(QtWidgets.QMainWindow):
                     self.is2hold = True
 
         elif label == '0':
-            if checkCD(time.time(), self.play_cd, 0):
+            if checkCD(time.time(), 0.6*self.holdSens, 0):
                 self.resetAllGes()
                 self.is2hold = False
 
         elif label == '5':
-            if checkCD(time.time(), 0.1, 5):
+            if checkCD(time.time(), 0.15, 5):
                 self.fourWayAction(det, self.travelSens)
+                self.is2hold = False
+
 
 
         elif label == 'Good':
             if checkCD(time.time(), self.holdSens, 6):
                 mouseRightClk()
+                self.resetAllGes()
+                self.is2hold = False
 
 
         elif label == 'OK':
             if checkCD(time.time(), self.holdSens, 7):
                 mouseLeftClk()
+                self.resetAllGes()
+                self.is2hold = False
 
 
 
@@ -88,6 +94,7 @@ class Main(QtWidgets.QMainWindow):
         self.mouse_locate = []
         self.mouse_history = []
         self.gesture_locate = []
+        resetLastTime5()
         mouseReset()
 
     def mouseMovement(self, det):
@@ -152,13 +159,20 @@ class Main(QtWidgets.QMainWindow):
             way = checkWay(x1, x2, y1, y2, sens)
             if way == 1:
                 self.gestureFunction5U()
+                self.resetAllGes()
             elif way == 2:
                 self.gestureFunction5D()
+                self.resetAllGes()
             elif way == 3:
                 self.gestureFunction5L()
+                self.resetAllGes()
             elif way == 4:
                 self.gestureFunction5R()
-
+                self.resetAllGes()
+            elif way == 0:
+                if checkCD5(time.time(), 1.5*self.holdSens):
+                    self.gestureFunction5H()
+                    self.resetAllGes()
 
     def getDefault(self):
         self.config.read('config.ini', encoding="utf-8")
@@ -166,15 +180,21 @@ class Main(QtWidgets.QMainWindow):
         gestureAction5D = self.config.get('gestureAction', '5d')
         gestureAction5L = self.config.get('gestureAction', '5l')
         gestureAction5R = self.config.get('gestureAction', '5r')
+        gestureAction5H = self.config.get('gestureAction', '5h')
+        #gestureActionZ = self.config.get('gestureAction', 'Z')
+
         self.gestureFunction5U = getattr(action, gestureAction5U)
         self.gestureFunction5D = getattr(action, gestureAction5D)
         self.gestureFunction5L = getattr(action, gestureAction5L)
         self.gestureFunction5R = getattr(action, gestureAction5R)
+        self.gestureFunction5H = getattr(action, gestureAction5H)
+
+        #self.gestureFunction5H = getattr(action, gestureAction5H)
         self.travelDefault = self.config['slider']['travel']
         self.holdDefault = self.config['slider']['commonHoldtime']
         self.cursorsensDefault = self.config['slider']['cursorsens']
         self.travelSens = 80+(5-int(self.travelDefault))*10
-        self.holdSens = 1.5+((int(self.holdDefault)-5)*0.2)
+        self.holdSens = 1+((int(self.holdDefault)-5)*0.1)
         self.cursorSens = 4+((int(self.cursorsensDefault)-5)*0.2)
 
     # 打开权重文件
@@ -196,7 +216,7 @@ class Main(QtWidgets.QMainWindow):
         parser.add_argument('--data', type=str, default='data/coco128.yaml', help='(optional) dataset.yaml path')
         parser.add_argument('--img-size', nargs='+', type=int, default=640,
                             help='inference size h,w')
-        parser.add_argument('--conf-thres', type=float, default=0.6, help='confidence threshold')
+        parser.add_argument('--conf-thres', type=float, default=0.75, help='confidence threshold')
         parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
         parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
         parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
@@ -483,6 +503,7 @@ class Setting(QtWidgets.QMainWindow):
         self.options = []
         self.travelDefault = 0
         self.holdDefault = 0
+        self.cursorDefault = 0
         self.getDefault()
         self.setDefault()
         self.setSliderDefault()
@@ -494,6 +515,8 @@ class Setting(QtWidgets.QMainWindow):
             self.options.append(key)
         self.travelDefault = self.config['slider']['travel']
         self.holdDefault = self.config['slider']['commonHoldtime']
+        self.cursorDefault = self.config['slider']['cursorsens']
+
 
     def setDefault(self):
         self.comboList = [self.ui.comboBox, self.ui.comboBox_2, self.ui.comboBox_3, self.ui.comboBox_4, self.ui.comboBox_5]
@@ -510,17 +533,28 @@ class Setting(QtWidgets.QMainWindow):
                                                                                          , self.ui.label_travel))
         self.ui.horizontalSlider_commonHoldtime.valueChanged.connect(lambda:
                                                                      self.setSliderValue(self.ui.horizontalSlider_commonHoldtime, self.ui.label_commonHoldtime))
+        self.ui.horizontalSlider_cursorsens.valueChanged.connect(lambda: self.setSliderValue(self.ui.horizontalSlider_cursorsens
+                                                                                         , self.ui.label_cursorsens))
+        self.ui.horizontalSlider_travel.valueChanged.connect(self.saveChangeSlider)
+        self.ui.horizontalSlider_cursorsens.valueChanged.connect(self.saveChangeSlider)
+        self.ui.horizontalSlider_commonHoldtime.valueChanged.connect(self.saveChangeSlider)
+
         self.ui.comboBox_11.addItem("Drag")
         self.ui.comboBox_12.addItem("Enter")
         self.ui.comboBox_13.addItem("RightClick")
+
     def setSliderDefault(self):
         self.ui.horizontalSlider_travel.setValue(int(self.travelDefault))
         self.ui.horizontalSlider_commonHoldtime.setValue(int(self.holdDefault))
+        self.ui.horizontalSlider_cursorsens.setValue(int(self.cursorDefault))
         self.ui.label_travel.setText(f"{int(self.travelDefault)}")
         self.ui.label_commonHoldtime.setText(f"{int(self.holdDefault)}")
+        self.ui.label_cursorsens.setText(f"{int(self.cursorDefault)}")
+
 
     def setSliderValue(self, slider, label):
         label.setText(f"{slider.value()}")
+
 
     def saveChange(self):
         _i = 0
@@ -530,6 +564,18 @@ class Setting(QtWidgets.QMainWindow):
                 self.config.write(configfile)
             _i += 1
 
+    def saveChangeSlider(self):
+        # 获取slider的值
+        travelValue = self.ui.horizontalSlider_travel.value()
+        holdValue = self.ui.horizontalSlider_commonHoldtime.value()
+        cursorValue = self.ui.horizontalSlider_cursorsens.value()
+
+        # 将值写入INI文件中
+        self.config.set('slider', 'travel', str(travelValue))
+        self.config.set('slider', 'commonholdtime', str(holdValue))
+        self.config.set('slider', 'cursorsens', str(cursorValue))
+        with open('config.ini', 'w', encoding="utf-8") as configfile:
+            self.config.write(configfile)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

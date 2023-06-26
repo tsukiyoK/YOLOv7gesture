@@ -6,7 +6,7 @@ import configparser
 
 
 def volumeUp():
-    n = 5   #volumeDefault
+    n = 10   #volumeDefault
     while n:
         win32api.keybd_event(win32con.VK_VOLUME_UP, 0)
         win32api.keybd_event(win32con.VK_VOLUME_UP, 0, win32con.KEYEVENTF_KEYUP)
@@ -15,7 +15,7 @@ def volumeUp():
 
 
 def volumeDown():
-    n = 5   #volumeDefault
+    n = 10   #volumeDefault
     while n:
         win32api.keybd_event(win32con.VK_VOLUME_DOWN, 0)
         win32api.keybd_event(win32con.VK_VOLUME_DOWN, 0, win32con.KEYEVENTF_KEYUP)
